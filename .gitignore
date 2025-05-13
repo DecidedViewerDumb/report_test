@@ -14,3 +14,6 @@ venv/
 ENV/
 .venv/
 .ENV/
+
+# csv файлы
+*.csv
