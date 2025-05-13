@@ -1,9 +1,11 @@
 import argparse
+import os.path
 import sys
 from collections import defaultdict
+from typing import List, Dict, Optional
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Генерация отчетов на основе CSV-файлов с данными сотрудников"
     )
@@ -21,7 +23,10 @@ def parse_args():
     return parser.parse_args()
 
 
-def read_employees_from_file(filepath):
+def read_employees_from_file(filepath: str) -> List[Dict[str, Optional[float]]]:
+    if not os.path.isfile(filepath):
+        raise FileNotFoundError(f"Файл не найден: {filepath}")
+
     employees = []
     with open(filepath, encoding="utf-8") as f:
         header = f.readline().strip().split(",")
@@ -55,7 +60,7 @@ def read_employees_from_file(filepath):
     return employees
 
 
-def generate_payout_report(employees):
+def generate_payout_report(employees: List[Dict[str, Optional[float]]]) -> None:
     departments = defaultdict(list)
     for i in employees:
         departments[i["department"]].append(i)
@@ -83,7 +88,7 @@ def generate_payout_report(employees):
         print(f"{' ' * 14}\t{' ' * len_name}\t{total_hours}\t\t${int(total_payout)}")
 
 
-def main():
+def main() -> None:
     args = parse_args()
 
     if args.report != "payout":
@@ -92,8 +97,15 @@ def main():
 
     all_employees = []
     for file in args.files:
-        employees = read_employees_from_file(file)
-        all_employees.extend(employees)
+        try:
+            employees = read_employees_from_file(file)
+            all_employees.extend(employees)
+        except FileNotFoundError as err:
+            print(err)
+            sys.exit()
+        except ValueError as err:
+            print(f"Ошибка в файле {file}: {e}")
+            sys.exit()
 
     sorted(all_employees, key=lambda x: x['department'])
     generate_payout_report(all_employees)
