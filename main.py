@@ -1,5 +1,4 @@
 import argparse
-import pprint
 import sys
 from collections import defaultdict
 
@@ -98,10 +97,6 @@ def main():
 
     sorted(all_employees, key=lambda x: x['department'])
     generate_payout_report(all_employees)
-
-    # print(f"Принятые файлы: {args.files}")
-    # print(f"Тип отчета: {args.report}")
-    # print("(Заглушка: отчет пока не формируется)")
 
 
 if __name__ == "__main__":
